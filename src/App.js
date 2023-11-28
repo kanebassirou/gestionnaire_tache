@@ -1,44 +1,26 @@
-import React from 'react';
-import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
-function Home() {
-  return <h2>Accueil</h2>;
-}
+function MonComposant() {
+  const [donnees, setDonnees] = useState(null); 
 
-function About() {
-  return <h2>À propos</h2>;
-}
-function Contact() {
-  return <h2>Nos contact</h2>;
+  useEffect(() => { 
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(response => response.json())
+      .then(data => setDonnees(data))
+      .catch(error => console.error('Une erreur est survenue :', error));
+  }, []); // Passer un tableau vide comme dépendance pour exécuter l'effet une seule fois au chargement du composant
 
-}
-function User() {
-  let { userId }  = useParams();
-  return <h2>Utilisateur {userId}</h2>;
-}
-function App() {
+  if (donnees === null) {
+    return 'Chargement...';
+  }
+
   return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li><Link to="/">Accueil</Link></li>
-            <li><Link to="/about">À propos</Link></li>
-            <li><Link to="/contact">Nos contact</Link></li>
-           <li><Link to="/user/1">Utilisateur 1</Link></li>
-           <li><Link to="/user/2">Utilisateur 2</Link></li>
-          </ul>
-        </nav>
-        <Routes>
-          <Route path="/" exact element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/user/:userId" element ={<User />}/>
-        </Routes>
-      </div>
-    </Router>
+    <div>
+      {donnees.map(donnee => (
+        <p key={donnee.id}>{donnee.title}</p>
+      ))}
+    </div>
   );
 }
 
-export default App;
+export default MonComposant;
